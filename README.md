@@ -1,3 +1,5 @@
-# lifechange
+# Life Change
 
-Atlassian job interview/code session. Let&#39;s see how it goes.
+A Atlassian job interview/code session. 
+
+For what I've seen about the company this can be a life change. I hope it goes well.
