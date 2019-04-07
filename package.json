@@ -4,7 +4,7 @@
   "description": "Code session for Atlassian",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "nyc --report=text mocha --timeout 999999 --colors src/**/*test.js"
   },
   "repository": {
     "type": "git",
@@ -15,6 +15,7 @@
   "homepage": "https://bitbucket.org/lucallero/lifechange#readme",
   "devDependencies": {
     "chai": "^4.2.0",
+    "deep-equal-in-any-order": "^1.0.13",
     "mocha": "^6.0.2",
     "nyc": "^13.3.0"
   }
