@@ -7,12 +7,6 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch App.js",
-            "program": "${workspaceFolder}/app.js"
-        },
-        {
-            "type": "node",
-            "request": "launch",
             "name": "Mocha All",
             "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
             "args": [
@@ -60,7 +54,7 @@
                 "src/**/*test.js"
             ],
             "env": {
-                "REGION": "us-east-1",                
+                "REGION": "us-east-1",
                 "LOG_LEVEL": "debug"
             },
             "console": "integratedTerminal",
