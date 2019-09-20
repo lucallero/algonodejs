@@ -10,7 +10,9 @@ chai.use(deepEqualInAnyOrder)
 
 describe('Should compute arrays intersection.', () => {
   it('Should compute arrays intersection, returning [2,2]', async () => {
+    console.time('Test: [2,2]')
     let result = test.main([1, 2, 2, 1], [2, 2])
+    console.timeEnd('Test: [2,2]')
     result.should.deep.equalInAnyOrder([2, 2])
   })
   it('Should compute arrays intersection, returning [4,9]', async () => {

@@ -18,5 +18,8 @@
     "deep-equal-in-any-order": "^1.0.13",
     "mocha": "^6.0.2",
     "nyc": "^13.3.0"
+  },
+  "dependencies": {
+    "tiny-bst": "^1.2.1"
   }
 }

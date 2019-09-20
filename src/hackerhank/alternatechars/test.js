@@ -33,4 +33,22 @@ describe('Should test for groups of AB.', () => {
     let result = test.main('AAABBB')
     result.should.equal(4)
   })
+
+  it('Should return integer 3', async () => {
+  let result = test.main('ABBABBAA')
+    result.should.equal(3)
+  })
+  it('Should return integer 6', async () => {
+    let result = test.main('AAABBBAABB')
+    result.should.equal(6)
+  })
+
+  it('Should return integer 4', async () => {
+    let result = test.main('AABBAABB')
+    result.should.equal(4)
+  })
+  it('Should return integer 1', async () => {
+    let result = test.main('ABABABAA')
+    result.should.equal(1)
+  })
 })
