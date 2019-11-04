@@ -1,45 +1,38 @@
 let indexEnemies = (n, a, b) => {
-  let eMap = new Map()
-  for (let i = 1; i <= n; i++) {
-    eMap.set(i, new Set())
-  }
-  if (a && b) {
-    for (let i = 0; i < a.length; i++) {
-      eMap.get(a[i]).add(b[i])
-      eMap.get(b[i]).add(a[i])
+  let enemiesMap = new Map()
+  if (enemiesMap.size === 0) {
+    for (let i = 1; i <= n; i++) {
+      enemiesMap.set(i, [])
+    }
+    if (a && b) {
+      for (let i = 0; i < a.length; i++) {
+        enemiesMap.get(a[i]).push(b[i])
+        enemiesMap.get(b[i]).push(a[i])
+      }
     }
   }
-  return eMap
+  return enemiesMap
 }
 
-let findJEnemies = (j, eMap, gEnemies) => {
-  Array.from(eMap.get(j)).map(element => gEnemies.add(element))
-  return gEnemies
+let countGroups = (n, a, b) => {
+  let enemiesMap = indexEnemies(n, a, b)
+  let groups = 0
+  for (let i = 1; i <= n; i++) {
+    let enemies = new Set()
+    for (let j = i; j > 0; j--) {
+      enemiesMap.get(j).map(enemy => enemies.add(enemy))
+      if (!enemies.has(j)) {
+        ++groups
+      } else {
+        break
+      }
+    }
+  }
+  return groups
 }
 
 function main (n, a, b) {
-  let eMap = indexEnemies(n, a, b)
-  let groups = new Set()
-
-  for (let i = 1; i <= n; i++) {
-    let enemies = new Set()
-    let group = new Set()
-    for (let j = i; j <= n; j++) {
-      findJEnemies(j, eMap, enemies)
-      if (group.size > 0) {
-        groups.add(Array.from(group.values()))
-      }
-      if (j + 1 <= n) {
-        if (!enemies.has(j + 1)) {
-          group.add(j)
-          group.add(j + 1)
-        } else {
-          break
-        }
-      }
-    }
-  }
-  return groups.size + n
+  return countGroups(n, a, b)
 }
 
-module.exports = { main, indexEnemies, findJEnemies }
+module.exports = { main, indexEnemies }
