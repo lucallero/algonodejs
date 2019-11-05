@@ -1,38 +1,35 @@
-let indexEnemies = (n, a, b) => {
-  let enemiesMap = new Map()
-  if (enemiesMap.size === 0) {
-    for (let i = 1; i <= n; i++) {
-      enemiesMap.set(i, [])
-    }
-    if (a && b) {
-      for (let i = 0; i < a.length; i++) {
-        enemiesMap.get(a[i]).push(b[i])
-        enemiesMap.get(b[i]).push(a[i])
-      }
-    }
+let enemiesMemo = (i, a, b, enemiesMap) => {
+  if (!enemiesMap.has(i)) {
+    let iEnemies = []
+    a.filter((enemy, at) => (enemy === i) ? iEnemies.push(b[at]) : '_')
+    b.filter((enemy, at) => (enemy === i) ? iEnemies.push(a[at]) : '_')
+    enemiesMap.set(i, iEnemies)
   }
-  return enemiesMap
+  return enemiesMap.get(i)
 }
 
-let countGroups = (n, a, b) => {
-  let enemiesMap = indexEnemies(n, a, b)
-  let groups = 0
+let makeSubGroups = (i, n, subgroup, gEnemies, groups, enemiesMap, a, b) => {
+  if (i > n) return subgroup
+  if (gEnemies.some(enemy => enemy === i)) {
+    return subgroup
+  }
+  subgroup.push(i)
+  console.log(subgroup.slice(0))
+  groups.add(subgroup.slice(0))
+  enemiesMemo(i, a, b, enemiesMap).map(enemy => gEnemies.push(enemy))
+  return makeSubGroups(i + 1, n, subgroup, gEnemies, groups, enemiesMap, a, b)
+}
+
+let makeGroups = (n, enemiesMap, a, b) => {
+  let groups = new Set()
   for (let i = 1; i <= n; i++) {
-    let enemies = new Set()
-    for (let j = i; j > 0; j--) {
-      enemiesMap.get(j).map(enemy => enemies.add(enemy))
-      if (!enemies.has(j)) {
-        ++groups
-      } else {
-        break
-      }
-    }
+    makeSubGroups(i, n, [], [], groups, enemiesMap, a, b)
   }
   return groups
 }
 
 function main (n, a, b) {
-  return countGroups(n, a, b)
+  return makeGroups(n, new Map(), a, b).size
 }
 
-module.exports = { main, indexEnemies }
+module.exports = { main }
