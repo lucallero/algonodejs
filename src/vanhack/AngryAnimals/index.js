@@ -1,35 +1,33 @@
-let enemiesMemo = (i, a, b, enemiesMap) => {
-  if (!enemiesMap.has(i)) {
-    let iEnemies = []
-    a.filter((enemy, at) => (enemy === i) ? iEnemies.push(b[at]) : '_')
-    b.filter((enemy, at) => (enemy === i) ? iEnemies.push(a[at]) : '_')
-    enemiesMap.set(i, iEnemies)
-  }
-  return enemiesMap.get(i)
-}
-
-let makeSubGroups = (i, n, subgroup, gEnemies, groups, enemiesMap, a, b) => {
-  if (i > n) return subgroup
-  if (gEnemies.some(enemy => enemy === i)) {
-    return subgroup
-  }
-  subgroup.push(i)
-  console.log(subgroup.slice(0))
-  groups.add(subgroup.slice(0))
-  enemiesMemo(i, a, b, enemiesMap).map(enemy => gEnemies.push(enemy))
-  return makeSubGroups(i + 1, n, subgroup, gEnemies, groups, enemiesMap, a, b)
-}
-
-let makeGroups = (n, enemiesMap, a, b) => {
-  let groups = new Set()
+// Transform enemies pairs into a Map
+let indexEnemies = (n, a, b, enemies) => {
   for (let i = 1; i <= n; i++) {
-    makeSubGroups(i, n, [], [], groups, enemiesMap, a, b)
+    enemies.set(i, [])
   }
-  return groups
+  for (let i = 0; i < a.length; i++) {
+    enemies.get(a[i]).push(b[i])
+    enemies.get(b[i]).push(a[i])
+  }
+  return enemies
+}
+// Decide which value should be the last max enemy
+let maxOrEnemy = (i, enemies, max) => {
+  let iEnemies = enemies.get(i).filter(e => e > i)
+  return Math.min(...iEnemies, max)// the enemy that is closest to and greater than i
+}
+// Top down aproach, counts the number of groups in each interval
+let countGroups = (n, a, b) => {
+  let enemies = indexEnemies(n, a, b, new Map())
+  let counting = 0
+  let max = n + 1 // max starts as the number of animals plus one
+  for (let i = n; i > 0; i--) {
+    max = maxOrEnemy(i, enemies, max)
+    counting += max - i
+  }
+  return counting
 }
 
 function main (n, a, b) {
-  return makeGroups(n, new Map(), a, b).size
+  return countGroups(n, a, b)
 }
 
 module.exports = { main }

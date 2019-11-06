@@ -15,7 +15,7 @@ describe('|  TESTING  |', () => {
     expect(result).to.equal(7)
   })
 
-  it.only('Should test main function with result 11', async () => {
+  it('Should test main function with result 11', async () => {
     let result = test.main(5, [1, 2], [3, 5])
     expect(result).to.equal(11)
   })
@@ -23,6 +23,11 @@ describe('|  TESTING  |', () => {
   it('Should test main function with result 18', async () => {
     let result = test.main(8, [2, 3, 4, 3], [8, 5, 6, 4])
     result.should.equal(18)
+  })
+
+  it('Should test main function with result 4', async () => {
+    let result = test.main(3, [1, 2, 3], [3, 3, 1])
+    result.should.equal(4)
   })
 
   it('Should test main function with result 1', async () => {
