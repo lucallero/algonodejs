@@ -1,0 +1,81 @@
+const Mocha = require('mocha')
+const mocha = new Mocha()
+const chai = require('chai')
+const expect = require('chai').expect
+
+mocha.suite.emit('pre-require', this, 'solution', mocha)
+
+class Currency {
+  constructor(code, standardUnit, minimalUnit){
+    this.code  = code
+    this.standardUnit = standardUnit
+    this.minimalUnit = minimalUnit
+  }
+    
+  convertToMinimalUnit(amount){    
+    return BigInt(amount.split('.').join(''))    
+  }
+  
+  convertToStandardUnit(amount){        
+    return amount / 100n    
+  } 
+}
+
+
+class CurrencyConverter {
+  constructor(inputCurrency, outputCurrency, rate ){
+    if(typeof rate !== 'string') throw new Error('rate should be a string')
+    this.inputCurrency = inputCurrency
+    this.outputCurrency = outputCurrency
+    this.rate = BigInt(rate.split('.').join(''))
+  }
+  
+  convert(amount){   
+    if(typeof amount !== 'string') throw new Error('Amount should be a string')
+    const input = this.inputCurrency.convertToMinimalUnit(amount)
+    const output = (input * this.rate) / 100n
+    const result = output.toString().split('')
+    if(amount.includes('.')) result.splice(-2, 0,'.')    
+    return result.join('')
+  }
+  
+  setRate(rate){
+    this.rate = rate
+  }
+}
+
+
+const USD = new Currency('USD', 'dollar', 'cent')
+const EUR = new Currency('EUR', 'euro', 'cent')
+
+
+const main = (nums) => {
+  const tripletFinder = new TripletFinder(nums)    
+  tripletFinder.findTriplets()       
+  return tripletFinder.getResult()
+}  
+
+
+describe('<< TESTS >>', () => {       
+  it('Should test Currency class', () => {
+    const USD = new Currency('USD', 'dollar', 'cent')    
+    let result = USD.convertToMinimalUnit('10.20')    
+    expect(result).to.equal(1020n)
+  })         
+  
+  it('Should test CurrencyConverter 100 to 104', () => {
+    let usdToEur = new CurrencyConverter(USD, EUR, '1.04')
+    let result = usdToEur.convert('100')
+    console.log('Result:',result)
+    expect(result).to.equal('104')
+  })         
+  it('Should test CurrencyConverter, 10.20 to 10.60', () => {
+    let usdToEur = new CurrencyConverter(USD, EUR, '1.04')
+    let result = usdToEur.convert('10.20')
+    console.log('Result:',result)
+    expect(result).to.equal('10.60')
+  })         
+  
+});
+
+mocha.run()

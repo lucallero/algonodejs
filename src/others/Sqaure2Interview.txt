@@ -1,0 +1,105 @@
+const Mocha = require('mocha')
+const mocha = new Mocha()
+const chai = require('chai')
+const expect = require('chai').expect
+
+
+const data = [
+  {"successful":false, "test":"swipe_test", "machine":"spring-chicken", "date":"2017-11-05"},
+  {"successful":false, "test":"rtm_check", "machine":"spring-chicken", "date":"2017-11-05"},
+  
+  {"successful":true, "test":"rtm_check", "machine":"spring-chicken", "date":"2017-11-06"},
+  
+  {"successful":true, "test":"swipe_test", "machine":"winter-squash", "date":"2017-11-05"},
+  {"successful":false, "test":"rtm_check", "machine":"winter-squash", "date":"2017-11-05"}
+]
+
+/*
+Goal:
+                    2017-11-05         2017-11-06
+                    ---------------    ---------------
+spring-chicken       0/2                1/1
+winter-squash        1/2                0/0
+*/
+
+mocha.suite.emit('pre-require', this, 'solution', mocha)
+
+/*
+filter data by machine
+group by date
+*/
+
+class Summary{
+ 
+  constructor(data){  
+    this.data = data
+    this.machines = this.extractMachines()
+    this.machineData = this.estractMachineData()
+    this.summary = this.groupByDate()
+  }
+  extractMachines() {
+    return new Set([...this.data.map(e => e.machine)])
+  }
+
+  
+  estractMachineData(){
+    let mData = new Map()
+    for(const machine of this.machines)   {
+      mData.set(machine, this.data.filter(e => e.machine === machine))
+    }
+    return mData    
+  }
+  
+  groupByDate() {
+    let summary = new Map()
+    for(const machine of this.machineData.keys()){      
+      if(!summary.has(machine)){
+          summary.set(machine, new Map())
+      }
+      for(const data of this.machineData.get(machine)){
+         if(!summary.get(machine).has(data.date)){
+            summary.get(machine).set(data.date,[data])
+         }else{
+            summary.get(machine).get(data.date).push(data)
+         }                
+      }      
+    }
+    return summary
+  }  
+  
+  printSummary(){
+    let table = []    
+    for (const machine of this.machines){      
+      for(const date of this.summary.get(machine).keys()){
+        let success = 0 
+        let failures = 0 
+        this.summary.get(machine).get(date).map(e => {          
+          e.successful ? success++ : failures++
+        })
+        console.log(`Machine: ${machine}: Date: ${date} : Success: ${success} Fails:${failures} Total: ${success + failures}`)
+      }        
+    }    
+  }
+   
+}
+  
+  
+describe('| TESTS |', () => {        
+  
+  let summary = new Summary(data)
+  
+  
+  summary.printSummary()
+  
+  it('Should extract machines!' , () => {   
+    let expected = new Set(['spring-chicken', 'winter-squash'])
+    expect(summary.extractMachines()).to.eql(expected)
+  })       
+  
+  
+  
+  
+  
+});
+
+mocha.run()

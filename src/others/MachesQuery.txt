@@ -1,0 +1,137 @@
+const Mocha = require('mocha')
+const mocha = new Mocha()
+const chai = require('chai')
+const expect = require('chai').expect
+
+mocha.suite.emit('pre-require', this, 'solution', mocha)
+
+var data = [ { p1: 'D', p2: 'H', p1Pts: 177, p2Pts: 425, winner: 'H' },
+  { p1: 'C', p2: 'G', p1Pts: 228, p2Pts: 466, winner: 'G' },
+  { p1: 'C', p2: 'I', p1Pts: 145, p2Pts: 73, winner: 'C' },
+  { p1: 'D', p2: 'I', p1Pts: 187, p2Pts: 172, winner: 'D' },
+  { p1: 'B', p2: 'H', p1Pts: 434, p2Pts: 545, winner: 'H' },
+  { p1: 'C', p2: 'F', p1Pts: 583, p2Pts: 324, winner: 'C' },
+  { p1: 'D', p2: 'G', p1Pts: 444, p2Pts: 438, winner: 'D' },
+  { p1: 'E', p2: 'G', p1Pts: 577, p2Pts: 847, winner: 'G' },
+  { p1: 'D', p2: 'G', p1Pts: 934, p2Pts: 128, winner: 'D' },
+  { p1: 'A', p2: 'F', p1Pts: 685, p2Pts: 231, winner: 'A' },
+  { p1: 'E', p2: 'H', p1Pts: 273, p2Pts: 376, winner: 'H' },
+  { p1: 'A', p2: 'H', p1Pts: 640, p2Pts: 308, winner: 'A' },
+  { p1: 'A', p2: 'J', p1Pts: 809, p2Pts: 884, winner: 'J' },
+  { p1: 'E', p2: 'H', p1Pts: 502, p2Pts: 582, winner: 'H' },
+  { p1: 'C', p2: 'I', p1Pts: 232, p2Pts: 799, winner: 'I' },
+  { p1: 'B', p2: 'J', p1Pts: 509, p2Pts: 846, winner: 'J' },
+  { p1: 'C', p2: 'G', p1Pts: 369, p2Pts: 577, winner: 'G' },
+  { p1: 'B', p2: 'I', p1Pts: 771, p2Pts: 470, winner: 'B' },
+  { p1: 'A', p2: 'G', p1Pts: 75, p2Pts: 903, winner: 'G' },
+  { p1: 'A', p2: 'J', p1Pts: 554, p2Pts: 662, winner: 'J' },
+  { p1: 'B', p2: 'I', p1Pts: 58, p2Pts: 554, winner: 'I' },
+  { p1: 'B', p2: 'J', p1Pts: 371, p2Pts: 629, winner: 'J' },
+  { p1: 'C', p2: 'I', p1Pts: 835, p2Pts: 183, winner: 'C' },
+  { p1: 'E', p2: 'H', p1Pts: 662, p2Pts: 971, winner: 'H' },
+  { p1: 'A', p2: 'H', p1Pts: 482, p2Pts: 605, winner: 'H' },
+  { p1: 'A', p2: 'J', p1Pts: 577, p2Pts: 192, winner: 'A' },
+  { p1: 'A', p2: 'I', p1Pts: 141, p2Pts: 397, winner: 'I' },
+  { p1: 'A', p2: 'I', p1Pts: 110, p2Pts: 540, winner: 'I' },
+  { p1: 'D', p2: 'G', p1Pts: 691, p2Pts: 476, winner: 'D' },
+  { p1: 'B', p2: 'G', p1Pts: 809, p2Pts: 197, winner: 'B' },
+  { p1: 'B', p2: 'G', p1Pts: 842, p2Pts: 561, winner: 'B' },
+  { p1: 'B', p2: 'J', p1Pts: 615, p2Pts: 169, winner: 'B' },
+  { p1: 'B', p2: 'J', p1Pts: 239, p2Pts: 200, winner: 'B' },
+  { p1: 'E', p2: 'G', p1Pts: 870, p2Pts: 434, winner: 'E' },
+  { p1: 'A', p2: 'I', p1Pts: 133, p2Pts: 823, winner: 'I' },
+  { p1: 'E', p2: 'J', p1Pts: 850, p2Pts: 787, winner: 'E' },
+  { p1: 'C', p2: 'G', p1Pts: 610, p2Pts: 41, winner: 'C' }]
+
+    
+/*
+
+BOOTSTRAP
+Summarizing data in the constructor function
+
+make a distict list of players
+
+catalogue opponents of each player
+
+catalogue game list under each opponent
+
+
+QUERY
+Navigate through a HashMap by the player X
+
+And capture all matches between X and Y
+
+Make the calculations
+
+*/
+
+
+class ResultsSummary {
+  constructor(results){
+    this.ranking = this.summarizeWinners(results)    
+  }
+  
+  
+  summarizeWinners(results){    
+    let ranking = new Map()
+            
+    for(const p of this.distinctPlayers(results)){  
+      ranking.set(p, new Map())      
+      let pMatches = results.filter(m => m.p1 === p || m.p2 === p)                  
+      
+      for(const match of pMatches){
+        let opponent = match.p1 === p ? match.p2  : match.p1        
+        
+        if(!ranking.get(p).get(opponent)){
+          ranking.get(p).set(opponent,[])  
+        }
+        
+        ranking.get(p).get(opponent).push(match)
+      }      
+    }        
+    return ranking
+  }
+  
+  
+  distinctPlayers(results){    
+    let players = new Set()
+    if(!results) return players
+    results.map(p => {
+      players.add(p.p1)
+      players.add(p.p2)
+    })      
+    return players
+  }
+  
+  query(p1, p2){   
+    if(!this.ranking.get(p1).has(p2)){
+      return -1
+    }    
+    
+    let p1Wins = this.ranking.get(p1).get(p2).filter(m => m.winner === p1).length
+    let p2Wins = this.ranking.get(p2).get(p1).filter(m => m.winner === p2).length    
+    
+    return p1Wins > p2Wins ? p1 : p2    
+  }
+  
+}
+
+
+
+describe('| TESTS |', () => {       
+  let rs = new ResultsSummary(data)
+ 
+  it('Should test distinctPlayers function', () => {    
+    let expected = new Set(['D', 'H', 'C', 'G', 'I', 'B', 'F', 'E', 'A', 'J'] )
+    expect(rs.distinctPlayers(data)).to.eql(expected)
+  })       
+  
+  
+  it('Should return D as the most winner of D and G', () => {        
+    expect(rs.query('D', 'G')).to.equal('D')
+  })       
+  
+  
+});
+
+mocha.run()
